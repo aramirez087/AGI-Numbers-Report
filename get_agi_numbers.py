@@ -201,7 +201,7 @@ def main():
                         rank, volume_rank, tg_community, tg_pricetalk, tg_devs, tg_deutschet, tg_arvr, tg_china,
                         tg_france, tg_germany, tg_holland, tg_philos, tg_portugal, tg_russia, tg_spain)
     # --------------------------------------------------------------------------------------------------------------
-    #send_notification()
+    send_notification()
     logger.info('Program finished...')
 
 
