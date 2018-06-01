@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "snet-report",
+  "private_key_id": "xxxxxXXXXXXxxxxxxxxXXXX",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nxxxxxXXXXXXxxxxxxxxXXXXxxxxxXXXXXXxxxxxxxxXXXX\n-----END PRIVATE KEY-----\n",
+  "client_email": "agi-report@snet-report.iam.gserviceaccount.com",
+  "client_id": "105754590707744148951",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://accounts.google.com/o/oauth2/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/agi-report%40snet-report.iam.gserviceaccount.com"
+}
