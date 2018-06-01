@@ -10,9 +10,10 @@ https://docs.google.com/spreadsheets/d/1uEyILbHfPL1MBGIO32tCeLEF1Ndq7BKam4FrksUK
 Originally written by Alexander Ramirez.
 """
 from oauth2client.service_account import ServiceAccountCredentials
-import configparser
 import logging, logging.config
+from bs4 import BeautifulSoup
 from datetime import date
+import configparser
 import telegram
 import requests
 import gspread
@@ -57,12 +58,8 @@ def get_token_holders():
     try:
         logger.info('Preparing to get token data...')
         response = requests.get(settings.get('ethereum', 'token_url'))
-        results = response.text
-        searchtag_a = settings.get('ethereum', 'searchtag_a')
-        searchtag_b = settings.get('ethereum', 'searchtag_b')
-        index1 = results.index(searchtag_a) + len(searchtag_a)
-        index2 = results.index(searchtag_b)
-        holders = results[index1:-1 * (len(results) - index2)]
+        soup = BeautifulSoup(response.text, 'html.parser')
+        holders = [int(s) for s in soup.get_text().splitlines()[44].split() if s.isdigit()][1] #Line 44 has the token holders
         logger.info('--- Found ' + str(holders) + 'token holders.')
         return holders
     except Exception as e:
@@ -90,12 +87,8 @@ def get_volume_rank():
     try:
         logger.info('Preparing to get volume rankings...')
         response = requests.get(settings.get('cmc', 'volume_url'))
-        results = response.text
-        searchtag_a = settings.get('cmc', 'searchtag_a')
-        searchtag_b = settings.get('cmc', 'searchtag_b')
-        index1 = results.index(searchtag_a) + len(searchtag_a) + 45
-        index2 = results.index(searchtag_b) - 2
-        volume_rank = results[index1:-1 * (len(results) - index2)] # fix encoding error
+        soup = BeautifulSoup(response.text, 'html.parser')
+        volume_rank = soup.find(id='singularitynet').text.splitlines()[3][:-1]
         logger.info('--- Successfully loaded volume data.')
         return volume_rank
     except Exception as e:
