@@ -71,8 +71,7 @@ def get_token_holders():
 def get_cmc_data():
     try:
         logger.info('Preparing to get CMC data...')
-        ticker_url = settings.get('cmc', 'ticker_url')
-        request = requests.get(ticker_url)
+        request = requests.get(settings.get('cmc', 'ticker_url'))
         data = request.json()
         logger.info('--- Successfully loaded CMC data.')
         return (data[0]['price_usd'], data[0]['price_btc'], data[0]['24h_volume_usd'],
@@ -168,7 +167,7 @@ def save_to_spreadsheet(pct_change, price, price_btc, volume, holders, reddit_su
 def send_notification():
     try:
         logger.info('Waiting for data to be refreshed...')
-        time.sleep(600)
+        time.sleep(10) #Wait 10 seconds
         sc = 'telegram'
         # Notify AGI Price Talk
         bot.send_message(settings.get(sc, 'pricetalk'), text=settings.get(sc, 'notification'))
