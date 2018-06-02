@@ -46,10 +46,10 @@ def get_twitter_followers():
         api = tweepy.API(auth)
         snet_twitter = api.get_user(settings.get(sc, 'username'))
         twitter_followers = snet_twitter.followers_count
-        logger.info('--- Found ' + str(twitter_followers) + ' twitter followers.')
+        logger.info('-- Found ' + str(twitter_followers) + ' twitter followers')
         return twitter_followers
     except Exception as e:
-        logger.error('Failed to read twitter data: ', exc_info=True)
+        logger.error('Failed to read twitter data', exc_info=True)
         return 0
 
 
@@ -60,10 +60,10 @@ def get_token_holders():
         response = requests.get(settings.get('ethereum', 'token_url'))
         soup = BeautifulSoup(response.text, 'html.parser')
         holders = [int(s) for s in soup.get_text().splitlines()[44].split() if s.isdigit()][1] #Line 44 has the token holders
-        logger.info('--- Found ' + str(holders) + 'token holders.')
+        logger.info('-- Found ' + str(holders) + ' token holders')
         return holders
     except Exception as e:
-        logger.error('Failed to obtain token holder count.', exc_info=True)
+        logger.error('Failed to obtain token holder count', exc_info=True)
         return 0
 
 
@@ -73,11 +73,11 @@ def get_cmc_data():
         logger.info('Preparing to get CMC data...')
         request = requests.get(settings.get('cmc', 'ticker_url'))
         data = request.json()
-        logger.info('--- Successfully loaded CMC data.')
+        logger.info('-- Successfully loaded CMC data')
         return (data[0]['price_usd'], data[0]['price_btc'], data[0]['24h_volume_usd'],
                 data[0]['rank'], data[0]['percent_change_24h'])
     except Exception as e:
-        logger.error('Failed to obtain CMC data.', exc_info=True)
+        logger.error('Failed to obtain CMC data', exc_info=True)
         return None
 
 
@@ -88,10 +88,10 @@ def get_volume_rank():
         response = requests.get(settings.get('cmc', 'volume_url'))
         soup = BeautifulSoup(response.text, 'html.parser')
         volume_rank = soup.find(id='singularitynet').text.splitlines()[3][:-1]
-        logger.info('--- Successfully loaded volume data.')
+        logger.info('-- Successfully loaded volume data')
         return volume_rank
     except Exception as e:
-        logger.error('Failed to obtain volume rankings.', exc_info=True)
+        logger.error('Failed to obtain volume rankings', exc_info=True)
         return 0
 
 
@@ -104,10 +104,10 @@ def get_reddit_subscribers():
                              client_secret=settings.get('reddit', 'client_secret'),
                              username=settings.get('reddit', 'username'), password=settings.get('reddit', 'password'))
         reddit_subscribers = reddit.get(settings.get('reddit', 'about_url'), ).subscribers
-        logger.info('--- Successfully loaded reddit data.')
+        logger.info('-- Successfully loaded reddit data')
         return reddit_subscribers
     except Exception as e:
-        logger.error('Failed to obtain reddit data.', exc_info=True)
+        logger.error('Failed to obtain reddit data', exc_info=True)
         return 0
 
 
@@ -129,13 +129,13 @@ def get_telegram_members():
         tg_portugal = bot.get_chat_members_count(settings.get(sc, 'portugal'))  # (AGI Portugal)
         tg_russia = bot.get_chat_members_count(settings.get(sc, 'russia'))  # (AGI Russia)
         tg_spain = bot.get_chat_members_count(settings.get(sc, 'spain'))  # (AGI Spain)
-        logger.info('--- Successfully loaded telegram data.')
+        logger.info('-- Successfully loaded telegram data')
         return (tg_community, tg_pricetalk, tg_devs,
                 tg_deutschet, tg_arvr, tg_china,
                 tg_france, tg_germany, tg_holland,
                 tg_philos, tg_portugal, tg_russia, tg_spain)
     except Exception as e:
-        logger.error('Failed to obtain telegram data.', exc_info=True)
+        logger.error('Failed to obtain telegram data', exc_info=True)
         return None
 
 
@@ -158,9 +158,9 @@ def save_to_spreadsheet(pct_change, price, price_btc, volume, holders, reddit_su
                        float(tg_china), float(tg_france), float(tg_germany), float(tg_holland), float(tg_philos),
                        float(tg_portugal), float(tg_russia), float(tg_spain)]
         wks.append_row(report_line)
-        logger.info('--- Successfully appended new row.')
+        logger.info('-- Successfully appended new row')
     except Exception as e:
-        logger.error('Failed to write data to google spreadsheet.', exc_info=True)
+        logger.error('Failed to write data to google spreadsheet', exc_info=True)
 
 
 # Send a notification when the report is refreshed
@@ -171,9 +171,9 @@ def send_notification():
         sc = 'telegram'
         # Notify AGI Price Talk
         bot.send_message(settings.get(sc, 'pricetalk'), text=settings.get(sc, 'notification'))
-        logger.info('--- Users have been notified.')
+        logger.info('-- Users have been notified')
     except Exception as e:
-        logger.error('Failed to write data to google spreadsheet.', exc_info=True)
+        logger.error('Failed to write data to google spreadsheet', exc_info=True)
 
 
 def main():
