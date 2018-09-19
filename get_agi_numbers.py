@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-"""
-Simple script to get some CMC data and telegram member count
+"""Simple script to get some CMC data and telegram member count
 for the SingularityNET project.
 
 The data is saved into this google spreadsheet daily:
@@ -10,7 +9,7 @@ https://docs.google.com/spreadsheets/d/1uEyILbHfPL1MBGIO32tCeLEF1Ndq7BKam4FrksUK
 Originally written by Alexander Ramirez.
 """
 from oauth2client.service_account import ServiceAccountCredentials
-import logging, logging.config
+import logging.config
 from bs4 import BeautifulSoup
 from retrying import retry
 from datetime import date
@@ -41,7 +40,6 @@ def get_twitter_followers():
     consumer_secret = settings.get(sc, 'consumer_secret')
     access_key = settings.get(sc, 'access_key')
     access_secret = settings.get(sc, 'access_secret')
-
     logger.info('Preparing to get twitter data...')
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_key, access_secret)
@@ -57,8 +55,12 @@ def get_twitter_followers():
 def get_token_holders():
     logger.info('Preparing to get token data...')
     response = requests.get(settings.get('ethereum', 'token_url'))
-    soup = BeautifulSoup(response.text, 'html.parser')
-    holders = [int(s) for s in soup.get_text().splitlines()[44].split() if s.isdigit()][1] #Line 44 has the token holders
+    results = response.text
+    searchtag_a = settings.get('ethereum', 'searchtag_a')
+    searchtag_b = settings.get('ethereum', 'searchtag_b')
+    index1 = results.index(searchtag_a) + len(searchtag_a)
+    index2 = results.index(searchtag_b)
+    holders = results[index1:-1 * (len(results) - index2)]
     logger.info('-- Found ' + str(holders) + ' token holders')
     return holders
 
@@ -100,7 +102,7 @@ def get_reddit_subscribers():
 
 
 # Count telegram members
-@retry(wait_exponential_multiplier=1000, wait_exponential_max=10000, stop_max_delay=60000)
+@retry
 def get_telegram_members():
     logger.info('Preparing to get telegram data...')
     sc = 'telegram'
@@ -125,7 +127,7 @@ def get_telegram_members():
 
 
 # Save to google spreadsheet
-@retry(wait_exponential_multiplier=1000, wait_exponential_max=10000, stop_max_delay=60000)
+#@retry(wait_exponential_multiplier=1000, wait_exponential_max=10000, stop_max_delay=60000)
 def save_to_spreadsheet(pct_change, price, price_btc, volume, holders, reddit_subscribers, twitter_followers,
                         rank, volume_rank, tg_community, tg_pricetalk, tg_devs, tg_deutschet, tg_arvr, tg_china,
                         tg_france, tg_germany, tg_holland, tg_philos, tg_portugal, tg_russia, tg_spain):
@@ -183,3 +185,4 @@ def main():
 if __name__ == "__main__":
     # execute only if run as a script
     main()
+
